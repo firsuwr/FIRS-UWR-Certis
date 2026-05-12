@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carica Certificato - FIRS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #ff6600; --bg: #0a1629; --card: #112240; --text: #ffffff; }
+    body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+    .container { width: 100%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 5px solid var(--primary); }
+    h2 { color: var(--primary); text-align: center; margin-bottom: 25px; }
+    label { display: block; margin-bottom: 5px; font-size: 14px; color: #8892b0; }
+    input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #233554; background: #0a192f; color: white; box-sizing: border-box; }
+    input[type="file"] { padding: 10px; background: transparent; border: 2px dashed var(--primary); cursor: pointer; }
+    button { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+    button:hover { filter: brightness(1.2); transform: translateY(-2px); }
+    #status { text-align: center; margin-top: 15px; font-weight: bold; display: none; }
+    .logo { display: block; width: 100px; margin: 0 auto 20px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://raw.githubusercontent.com/Andrea91x/immagini-UWR/cf9e13f6240e9fe83e99be32db149476337eb038/Logo-Firs.jpeg" class="logo">
+    <h2>Invio Certificato</h2>
+    
+    <form id="uploadForm">
+      <label>Nome e Cognome</label>
+      <input type="text" id="nome" placeholder="Mario Rossi" required>
+      
+      <label>Email</label>
+      <input type="email" id="email" placeholder="mario@email.com" required>
+      
+      <label>Data Scadenza Certificato</label>
+      <input type="date" id="scadenza" required>
+      
+      <label>Allega Certificato (PDF o Foto)</label>
+      <input type="file" id="file" accept="application/pdf,image/*" required>
+      
+      <button type="submit" id="submitBtn">Invia Certificato 🐙</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    const scriptUrl = "IL_TUO_LINK_WEB_APP_DI_TEST"; // Incolla qui il link della Web App di Google
+
+    document.getElementById('uploadForm').onsubmit = function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const status = document.getElementById('status');
+      const fileInput = document.getElementById('file').files[0];
+      
+      btn.disabled = true;
+      btn.innerText = "Caricamento in corso... ⏳";
+      status.style.display = "block";
+      status.innerText = "Preparazione file...";
+      status.style.color = "white";
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const data = {
+          nome: document.getElementById('nome').value,
+          email: document.getElementById('email').value,
+          scadenza: document.getElementById('scadenza').value,
+          file: event.target.result // Base64 del file
+        };
+
+        // Invio a Google Apps Script
+        google.script.run
+          .withSuccessHandler(res => {
+            if(res.success) {
+              status.innerText = res.anomalia ? "✅ Inviato! (Ti abbiamo registrato come nuovo atleta)" : "✅ Certificato ricevuto correttamente!";
+              status.style.color = "#28a745";
+              document.getElementById('uploadForm').reset();
+            } else {
+              status.innerText = "❌ Errore: " + res.error;
+              status.style.color = "#dc3545";
+            }
+            btn.disabled = false;
+            btn.innerText = "Invia Certificato 🐙";
+          })
+          .uploadCertificatoEsterno(data);
+      };
+      reader.readAsDataURL(fileInput);
+    };
+  </script>
+</body>
+</html>
