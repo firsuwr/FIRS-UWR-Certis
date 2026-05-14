@@ -1,63 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carica Certificato - FIRS</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #ff6600; --bg: #0a1629; --card: #112240; --text: #ffffff; }
-    body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
-    .container { width: 100%; max-width: 400px; background: var(--card); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-top: 5px solid var(--primary); }
-    h2 { color: var(--primary); text-align: center; margin-bottom: 25px; }
-    label { display: block; margin-bottom: 5px; font-size: 14px; color: #8892b0; }
-    input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #233554; background: #0a192f; color: white; box-sizing: border-box; }
-    input[type="file"] { padding: 10px; background: transparent; border: 2px dashed var(--primary); cursor: pointer; }
-    button { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
-    button:hover { filter: brightness(1.2); transform: translateY(-2px); }
-    #status { text-align: center; margin-top: 15px; font-weight: bold; display: none; }
-    .logo { display: block; width: 100px; margin: 0 auto 20px; border-radius: 10px; }
+    :root { 
+      --primary: #ff6600; 
+      --primary-hover: #ff8533;
+      --bg: #0a1629; 
+      --card: #112240; 
+      --text: #ffffff; 
+      --input-bg: #0a192f;
+      --border: #233554;
+    }
+
+    body { 
+      font-family: 'Montserrat', sans-serif; 
+      background: radial-gradient(circle at top, #1a2a44 0%, var(--bg) 100%);
+      color: var(--text); 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px; 
+    }
+
+    .container { 
+      width: 100%; 
+      max-width: 420px; 
+      background: var(--card); 
+      padding: 40px 30px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+      border: 1px solid rgba(255,102,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Barra decorativa superiore */
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), #ffd4b8);
+    }
+
+    .header-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo { 
+      width: 110px; 
+      margin-bottom: 15px; 
+      border-radius: 15px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    h2 { 
+      color: var(--text); 
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    p.subtitle {
+      color: var(--primary);
+      font-size: 14px;
+      margin-top: 5px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-size: 13px; 
+      font-weight: 600;
+      color: #ccd6f6; 
+    }
+
+    input { 
+      width: 100%; 
+      padding: 14px; 
+      margin-bottom: 25px; 
+      border-radius: 10px; 
+      border: 1px solid var(--border); 
+      background: var(--input-bg); 
+      color: white; 
+      box-sizing: border-box; 
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(255,102,0,0.2);
+    }
+
+    input[type="file"] { 
+      padding: 15px; 
+      background: rgba(255,102,0,0.05); 
+      border: 2px dashed var(--primary); 
+      cursor: pointer; 
+      text-align: center;
+    }
+
+    button { 
+      width: 100%; 
+      padding: 16px; 
+      border: none; 
+      border-radius: 10px; 
+      background: var(--primary); 
+      color: white; 
+      font-weight: bold; 
+      font-size: 16px; 
+      cursor: pointer; 
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      box-shadow: 0 4px 15px rgba(255,102,0,0.3);
+    }
+
+    button:hover { 
+      background: var(--primary-hover);
+      transform: translateY(-3px); 
+      box-shadow: 0 6px 20px rgba(255,102,0,0.4);
+    }
+
+    button:disabled {
+      background: #444;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #status { 
+      text-align: center; 
+      margin-top: 20px; 
+      font-size: 14px;
+      font-weight: 500; 
+      padding: 10px;
+      border-radius: 8px;
+      display: none; 
+    }
+
+    .loader-bar {
+      width: 0%;
+      height: 4px;
+      background: var(--primary);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      transition: width 0.5s;
+    }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <img src="https://raw.githubusercontent.com/Andrea91x/immagini-UWR/cf9e13f6240e9fe83e99be32db149476337eb038/Logo-Firs.jpeg" class="logo">
-    <h2>Invio Certificato</h2>
+    <div class="header-section">
+      <img src="https://raw.githubusercontent.com/Andrea91x/immagini-UWR/cf9e13f6240e9fe83e99be32db149476337eb038/Logo-Firs.jpeg" class="logo" alt="FIRS Logo">
+      <h2>FIRS</h2>
+      <p class="subtitle">Upload-Certificati-Medici</p>
+    </div>
     
     <form id="uploadForm">
-      <label>Nome e Cognome</label>
-      <input type="text" id="nome" placeholder="Mario Rossi" required>
+      <label for="nome">Nome e Cognome</label>
+      <input type="text" id="nome" placeholder="Es: Andrea Sergi" required>
       
-      <label>Email</label>
-      <input type="email" id="email" placeholder="mario@email.com" required>
+      <label for="email">Email Personale</label>
+      <input type="email" id="email" placeholder="nome@esempio.com" required>
       
-      <label>Data Scadenza Certificato</label>
+      <label for="scadenza">Data Scadenza Certificato</label>
       <input type="date" id="scadenza" required>
       
-      <label>Allega Certificato (PDF o Foto)</label>
+      <label for="file">Carica Documento (PDF o Foto)</label>
       <input type="file" id="file" accept="application/pdf,image/*" required>
       
-      <button type="submit" id="submitBtn">Invia Certificato 🐙</button>
+      <button type="submit" id="submitBtn">Invia al Database 🐙</button>
     </form>
+    
     <div id="status"></div>
+    <div class="loader-bar" id="loaderBar"></div>
   </div>
 
   <script>
-    // 🔴 INCOLLA QUI IL LINK DEL TUO NUOVO DEPLOYMENT (inizia con https://script.google.com/macros/s/...)
+    // 🔴 IL TUO LINK DEPLOYMENT AGGIORNATO
     const scriptUrl = "https://script.google.com/macros/s/AKfycbwdQt5ShoTY3t-UIVSllZdwGGN9mBXFCJZs9mQc2bySr0TuySRuQpQTHU9Nrn2qyXI/exec"; 
-    
 
     document.getElementById('uploadForm').onsubmit = function(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       const status = document.getElementById('status');
+      const loaderBar = document.getElementById('loaderBar');
       const fileInput = document.getElementById('file').files[0];
       
+      // Controllo dimensione file (Max 10MB per sicurezza Base64)
+      if (fileInput.size > 10 * 1024 * 1024) {
+        alert("Il file è troppo grande. Massimo 10MB.");
+        return;
+      }
+
       btn.disabled = true;
-      btn.innerText = "Caricamento in corso... ⏳ (potrebbe volerci un minuto)";
+      btn.innerText = "Elaborazione in corso...";
       status.style.display = "block";
-      status.innerText = "Codifica del file in corso...";
+      status.style.background = "rgba(255,255,255,0.05)";
       status.style.color = "white";
+      status.innerText = "Codifica file...";
+      loaderBar.style.width = "30%";
 
       const reader = new FileReader();
       reader.onload = function(event) {
@@ -65,38 +219,42 @@
           nome: document.getElementById('nome').value,
           email: document.getElementById('email').value,
           scadenza: document.getElementById('scadenza').value,
-          file: event.target.result // Trasforma il PDF in codice Base64
+          file: event.target.result 
         };
 
-        status.innerText = "Invio al server FIRS...";
+        status.innerText = "Invio al server FIRS... 🚀";
+        loaderBar.style.width = "60%";
 
-        // INVIO ALL'API DI GOOGLE
         fetch(scriptUrl, {
           method: 'POST',
           body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(res => {
+          loaderBar.style.width = "100%";
           if(res.success) {
-            status.innerText = res.anomalia ? "✅ Inviato! (Ti abbiamo registrato come nuovo atleta)" : "✅ Certificato ricevuto correttamente!";
+            status.innerText = res.anomalia ? "✅ Inviato! Registrato come nuovo atleta." : "✅ Certificato ricevuto correttamente!";
+            status.style.background = "rgba(40, 167, 69, 0.2)";
             status.style.color = "#28a745";
             document.getElementById('uploadForm').reset();
           } else {
             status.innerText = "❌ Errore: " + res.error;
+            status.style.background = "rgba(220, 53, 69, 0.2)";
             status.style.color = "#dc3545";
           }
           btn.disabled = false;
-          btn.innerText = "Invia Certificato 🐙";
+          btn.innerText = "Invia al Database 🐙";
+          setTimeout(() => { loaderBar.style.width = "0%"; }, 3000);
         })
         .catch(err => {
           status.innerText = "❌ Errore di connessione. Riprova.";
           status.style.color = "#dc3545";
           btn.disabled = false;
-          btn.innerText = "Invia Certificato 🐙";
+          btn.innerText = "Invia al Database 🐙";
+          loaderBar.style.width = "0%";
         });
       };
       
-      // Avvia la lettura del file
       reader.readAsDataURL(fileInput);
     };
   </script>
